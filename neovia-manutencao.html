@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NEOVIA Engenharia — Manutenção de Frota</title>
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --red:        #CC1F1F;
+    --red-bright: #E82828;
+    --red-dark:   #9B1515;
+    --bg:         #0A0A0B;
+    --surface:    #161618;
+    --surface2:   #1E1E22;
+    --surface3:   #252529;
+    --border:     rgba(255,255,255,0.06);
+    --border-red: rgba(204,31,31,0.3);
+    --text:       #EAEAEA;
+    --muted:      #5A5A65;
+    --muted2:     #888898;
+    --success:    #22C55E;
+    --danger:     #EF4444;
+  }
+
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  body::before {
+    content: '';
+    position: fixed; inset: 0;
+    background:
+      radial-gradient(ellipse 60% 40% at 50% 0%, rgba(204,31,31,0.09) 0%, transparent 65%),
+      radial-gradient(ellipse 30% 30% at 0% 60%, rgba(204,31,31,0.04) 0%, transparent 70%);
+    pointer-events: none; z-index: 0;
+  }
+
+  body::after {
+    content: '';
+    position: fixed; inset: 0;
+    background-image:
+      linear-gradient(rgba(255,255,255,0.018) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.018) 1px, transparent 1px);
+    background-size: 48px 48px;
+    pointer-events: none; z-index: 0;
+  }
+
+  header {
+    position: relative; z-index: 10;
+    padding: 0 40px; height: 64px;
+    display: flex; align-items: center;
+    background: rgba(10,10,11,0.92);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .logo-wrap { display: flex; align-items: center; gap: 14px; }
+  .logo-mark { width: 36px; height: 36px; flex-shrink: 0; }
+
+  .logo-wordmark { display: flex; flex-direction: column; line-height: 1; }
+  .logo-wordmark .name {
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 700; font-size: 22px; letter-spacing: 3px; color: var(--text);
+  }
+  .logo-wordmark .eng {
+    font-size: 9px; letter-spacing: 4px; color: var(--muted2);
+    text-transform: uppercase; margin-top: 1px;
+  }
+
+  .header-divider { width: 1px; height: 28px; background: var(--border); margin: 0 20px; }
+  .header-label { font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: var(--muted2); font-weight: 500; }
+
+  .header-right { margin-left: auto; display: flex; align-items: center; gap: 8px; }
+  .status-dot {
+    width: 7px; height: 7px; border-radius: 50%;
+    background: var(--success); box-shadow: 0 0 8px var(--success);
+    animation: pulse-dot 2s ease-in-out infinite;
+  }
+  @keyframes pulse-dot { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+  .status-text { font-size: 11px; color: var(--muted2); letter-spacing: 1px; }
+
+  main {
+    position: relative; z-index: 1;
+    flex: 1; display: flex; justify-content: center;
+    padding: 52px 16px 80px;
+  }
+
+  .container {
+    width: 100%; max-width: 660px;
+    display: flex; flex-direction: column;
+    animation: fadeUp 0.5s ease both;
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .hero {
+    background: var(--surface);
+    border: 1px solid var(--border); border-bottom: none;
+    border-radius: 14px 14px 0 0;
+    padding: 32px 36px 28px;
+    position: relative; overflow: hidden;
+  }
+
+  .hero::before {
+    content: ''; position: absolute;
+    left: 0; top: 0; bottom: 0; width: 3px;
+    background: linear-gradient(180deg, var(--red-bright), var(--red-dark));
+  }
+
+  .hero::after {
+    content: ''; position: absolute;
+    right: -20px; top: -20px;
+    width: 200px; height: 200px;
+    background: radial-gradient(circle, rgba(204,31,31,0.06), transparent 70%);
+    border-radius: 50%; pointer-events: none;
+  }
+
+  .hero-eyebrow {
+    font-size: 10px; letter-spacing: 4px; text-transform: uppercase;
+    color: var(--red-bright); font-weight: 600;
+    margin-bottom: 10px; display: flex; align-items: center; gap: 8px;
+  }
+  .hero-eyebrow::before {
+    content: ''; display: inline-block;
+    width: 20px; height: 1px; background: var(--red-bright);
+  }
+
+  .hero h1 {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 36px; font-weight: 700; letter-spacing: 1px; line-height: 1;
+  }
+  .hero h1 em { font-style: normal; color: var(--red-bright); }
+  .hero p { margin-top: 10px; font-size: 13px; color: var(--muted2); line-height: 1.6; max-width: 420px; }
+
+  .form-card {
+    background: var(--surface);
+    border: 1px solid var(--border); border-top: none;
+    border-radius: 0 0 14px 14px;
+    padding: 36px;
+    display: flex; flex-direction: column; gap: 28px;
+  }
+
+  .section-head { display: flex; align-items: center; gap: 12px; margin-bottom: 18px; }
+  .section-icon {
+    width: 30px; height: 30px;
+    background: rgba(204,31,31,0.1);
+    border: 1px solid var(--border-red);
+    border-radius: 7px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px; flex-shrink: 0;
+  }
+  .section-title {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 13px; font-weight: 700; letter-spacing: 3px;
+    text-transform: uppercase; color: var(--muted2);
+  }
+  .section-line { flex: 1; height: 1px; background: var(--border); }
+
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .field { display: flex; flex-direction: column; gap: 6px; }
+  .field.span2 { grid-column: 1 / -1; }
+
+  label {
+    font-size: 10.5px; font-weight: 600; letter-spacing: 1.5px;
+    text-transform: uppercase; color: var(--muted); transition: color 0.2s;
+  }
+  .field:focus-within label { color: var(--red-bright); }
+  label .req { color: var(--red-bright); margin-left: 2px; }
+
+  input, textarea {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px; color: var(--text);
+    font-family: 'DM Sans', sans-serif; font-size: 14px;
+    padding: 11px 14px;
+    transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+    outline: none; width: 100%;
+  }
+  input:hover, textarea:hover { border-color: rgba(255,255,255,0.1); background: var(--surface3); }
+  input:focus, textarea:focus {
+    border-color: rgba(204,31,31,0.5);
+    box-shadow: 0 0 0 3px rgba(204,31,31,0.08);
+    background: var(--surface3);
+  }
+  input::placeholder, textarea::placeholder { color: var(--muted); opacity: 0.55; }
+  textarea { resize: vertical; min-height: 96px; line-height: 1.6; }
+
+  .price-wrap { position: relative; }
+  .price-wrap .curr {
+    position: absolute; left: 14px; top: 50%; transform: translateY(-50%);
+    font-size: 12px; color: var(--red-bright); font-weight: 600; pointer-events: none;
+  }
+  .price-wrap input { padding-left: 38px; }
+
+  .btn-submit {
+    width: 100%; padding: 16px 24px;
+    background: var(--red); color: white; border: none;
+    border-radius: 10px;
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 18px; font-weight: 700; letter-spacing: 3px; text-transform: uppercase;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.1s, box-shadow 0.2s;
+    box-shadow: 0 4px 28px rgba(204,31,31,0.28), inset 0 1px 0 rgba(255,255,255,0.08);
+    display: flex; align-items: center; justify-content: center; gap: 12px;
+    position: relative; overflow: hidden;
+  }
+  .btn-submit::before {
+    content: ''; position: absolute; inset: 0;
+    background: linear-gradient(135deg, rgba(255,255,255,0.06) 0%, transparent 60%);
+    pointer-events: none;
+  }
+  .btn-submit:hover {
+    background: var(--red-bright);
+    box-shadow: 0 6px 36px rgba(204,31,31,0.45), inset 0 1px 0 rgba(255,255,255,0.1);
+  }
+  .btn-submit:active { transform: scale(0.99); }
+  .btn-submit:disabled { opacity: 0.45; cursor: not-allowed; transform: none; box-shadow: none; }
+
+  .btn-arrow { font-size: 18px; transition: transform 0.2s; }
+  .btn-submit:hover .btn-arrow { transform: translateX(4px); }
+
+  .spinner {
+    width: 18px; height: 18px;
+    border: 2px solid rgba(255,255,255,0.3);
+    border-top-color: white; border-radius: 50%;
+    animation: spin 0.6s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  #toast {
+    position: fixed; bottom: 28px; left: 50%;
+    transform: translateX(-50%) translateY(16px);
+    background: var(--surface2); border: 1px solid var(--border);
+    border-radius: 10px; padding: 12px 20px;
+    font-size: 13.5px; display: flex; align-items: center; gap: 10px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+    opacity: 0; transition: all 0.35s cubic-bezier(0.34,1.56,0.64,1);
+    pointer-events: none; z-index: 999; white-space: nowrap; max-width: 90vw;
+  }
+  #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+  #toast.success { border-color: rgba(34,197,94,0.35); }
+  #toast.success .t-icon { color: var(--success); }
+  #toast.error { border-color: rgba(239,68,68,0.35); }
+  #toast.error .t-icon { color: var(--danger); }
+
+  @media (max-width: 540px) {
+    header { padding: 0 20px; }
+    .hero, .form-card { padding: 24px 20px; }
+    .grid-2 { grid-template-columns: 1fr; }
+    .header-divider, .header-label { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo-wrap">
+    <svg class="logo-mark" viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M4 30V6H13L22 21V6H32V30H23L14 15V30H4Z" fill="#CC1F1F"/>
+      <path d="M4 6H13L22 21V6H32V30H23L14 15V30H4V6Z" fill="url(#ng)" opacity="0.3"/>
+      <defs>
+        <linearGradient id="ng" x1="4" y1="6" x2="32" y2="30" gradientUnits="userSpaceOnUse">
+          <stop stop-color="#FF4444"/>
+          <stop offset="1" stop-color="#7A0000"/>
+        </linearGradient>
+      </defs>
+    </svg>
+    <div class="logo-wordmark">
+      <span class="name">NEOVIA</span>
+      <span class="eng">Engenharia</span>
+    </div>
+  </div>
+  <div class="header-divider"></div>
+  <span class="header-label">Registro de Manutenção</span>
+  <div class="header-right">
+    <div class="status-dot"></div>
+    <span class="status-text">Online</span>
+  </div>
+</header>
+
+<main>
+  <div class="container">
+
+    <div class="hero">
+      <div class="hero-eyebrow">Frota &amp; Mecânica</div>
+      <h1>Registro de<br><em>Manutenção</em></h1>
+      <p>Preencha os dados do serviço realizado no veículo. O registro será salvo automaticamente na planilha da equipe.</p>
+    </div>
+
+    <div class="form-card">
+
+      <!-- Responsável -->
+      <div>
+        <div class="section-head">
+          <div class="section-icon">👤</div>
+          <span class="section-title">Responsável</span>
+          <div class="section-line"></div>
+        </div>
+        <div class="field">
+          <label>Nome completo<span class="req">*</span></label>
+          <input type="text" id="nome" placeholder="Ex: Carlos Silva" autocomplete="name">
+        </div>
+      </div>
+
+      <!-- Veículo -->
+      <div>
+        <div class="section-head">
+          <div class="section-icon">🚛</div>
+          <span class="section-title">Veículo</span>
+          <div class="section-line"></div>
+        </div>
+        <div class="field">
+          <label>Placa<span class="req">*</span></label>
+          <input type="text" id="placa" placeholder="ABC-1234" maxlength="8">
+        </div>
+      </div>
+
+      <!-- Manutenção -->
+      <div>
+        <div class="section-head">
+          <div class="section-icon">🔧</div>
+          <span class="section-title">Manutenção</span>
+          <div class="section-line"></div>
+        </div>
+        <div class="grid-2">
+          <div class="field">
+            <label>Data do Serviço<span class="req">*</span></label>
+            <input type="date" id="data">
+          </div>
+          <div class="field">
+            <label>Valor Total</label>
+            <div class="price-wrap">
+              <span class="curr">R$</span>
+              <input type="number" id="preco" placeholder="0,00" step="0.01" min="0">
+            </div>
+          </div>
+          <div class="field span2">
+            <label>Descrição da Manutenção<span class="req">*</span></label>
+            <textarea id="descricao" placeholder="Descreva o problema identificado, peças trocadas e serviços realizados..."></textarea>
+          </div>
+          <div class="field span2">
+            <label>Mecânico / Oficina</label>
+            <input type="text" id="mecanico" placeholder="Nome ou razão social">
+          </div>
+          <div class="field span2">
+            <label>Observações</label>
+            <textarea id="obs" placeholder="Próxima revisão, peças pendentes, alertas importantes..." style="min-height:72px;"></textarea>
+          </div>
+        </div>
+      </div>
+
+      <button class="btn-submit" id="btn" onclick="enviar()">
+        <span id="btn-text">Enviar Registro</span>
+        <span id="btn-icon" class="btn-arrow">→</span>
+      </button>
+
+    </div>
+  </div>
+</main>
+
+<div id="toast">
+  <span class="t-icon" id="t-icon">✓</span>
+  <span id="t-msg">Registro enviado!</span>
+</div>
+
+<script>
+  const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwblRV25NrGhqR53pQE-M2a7ImeT-SWyct2DL5UuiRgcjm28QSvhYzn5yFMmoGmYGsG/exec";
+
+  document.getElementById('data').valueAsDate = new Date();
+  document.getElementById('placa').addEventListener('input', e => {
+    e.target.value = e.target.value.toUpperCase();
+  });
+
+  function toast(msg, type = 'success') {
+    const el = document.getElementById('toast');
+    document.getElementById('t-msg').textContent = msg;
+    document.getElementById('t-icon').textContent = type === 'success' ? '✓' : '✕';
+    el.className = 'show ' + type;
+    setTimeout(() => el.className = '', 3800);
+  }
+
+  function setLoading(on) {
+    const btn = document.getElementById('btn');
+    document.getElementById('btn-text').textContent = on ? 'Enviando...' : 'Enviar Registro';
+    document.getElementById('btn-icon').innerHTML = on
+      ? '<span class="spinner"></span>'
+      : '<span class="btn-arrow">→</span>';
+    btn.disabled = on;
+  }
+
+  function highlight(id) {
+    const el = document.getElementById(id);
+    el.style.borderColor = 'rgba(239,68,68,0.6)';
+    el.style.boxShadow = '0 0 0 3px rgba(239,68,68,0.1)';
+    el.focus();
+    setTimeout(() => { el.style.borderColor = ''; el.style.boxShadow = ''; }, 2500);
+  }
+
+  function validar() {
+    const required = [
+      { id: 'nome',      msg: 'Informe o nome do responsável' },
+      { id: 'placa',     msg: 'Informe a placa do caminhão' },
+      { id: 'data',      msg: 'Informe a data do serviço' },
+      { id: 'descricao', msg: 'Descreva a manutenção realizada' },
+    ];
+    for (const f of required) {
+      if (!document.getElementById(f.id).value.trim()) {
+        highlight(f.id);
+        toast(f.msg, 'error');
+        return false;
+      }
+    }
+    return true;
+  }
+
+  async function enviar() {
+    if (!validar()) return;
+
+    const payload = {
+      nome:      document.getElementById('nome').value.trim(),
+      placa:     document.getElementById('placa').value.trim(),
+      data:      document.getElementById('data').value,
+      descricao: document.getElementById('descricao').value.trim(),
+      mecanico:  document.getElementById('mecanico').value.trim(),
+      preco:     document.getElementById('preco').value || '0',
+      obs:       document.getElementById('obs').value.trim(),
+      timestamp: new Date().toLocaleString('pt-BR'),
+    };
+
+    setLoading(true);
+    try {
+      await fetch(SCRIPT_URL, {
+        method: 'POST', mode: 'no-cors',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+      toast('Registro enviado com sucesso! ✓', 'success');
+      limpar();
+    } catch (err) {
+      toast('Erro ao enviar. Tente novamente.', 'error');
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  function limpar() {
+    ['nome','placa','mecanico','descricao','obs','preco'].forEach(id => {
+      document.getElementById(id).value = '';
+    });
+    document.getElementById('data').valueAsDate = new Date();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+</script>
+</body>
+</html>
